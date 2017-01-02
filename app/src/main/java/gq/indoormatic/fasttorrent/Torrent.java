@@ -45,10 +45,9 @@ public class Torrent {
     private String coverUrl;
     private String description;
 
-    public Torrent(String name, String qualityFormat, String coverUrl, String infoUrl) {
+    public Torrent(String name, String qualityFormat, String infoUrl) {
         this.name = name;
         this.qualityFormat = qualityFormat;
-        this.coverUrl = coverUrl;
         url = infoUrl;
     }
 
@@ -117,10 +116,11 @@ class GetTorrentsJob extends AsyncTask<Object, Void, ArrayList<Torrent>> {
                         if (quality.get(i).text().equals("(MicroHD-1080p)")) {
                             Document image = Jsoup.parseBodyFragment(links.get(i).html());
                             Elements imageHtml = image.getElementsByTag("img");
-                            list.add(new Torrent(links.get(i + 3).text(),
+                            Torrent torrent = new Torrent(links.get(i + 3).text(),
                                     "(MicroHD-1080p)",
-                                    "http://www.mejortorrent.com" + imageHtml.attr("src"),
-                                    "http://www.mejortorrent.com" + links.get(i).attr("href")));
+                                    "http://www.mejortorrent.com" + links.get(i).attr("href"));
+                            torrent.setCoverUrl("http://www.mejortorrent.com" + imageHtml.attr("src"));
+                            list.add(torrent);
                         }
                     }
                 }
@@ -152,11 +152,16 @@ class GetTorrentsJob extends AsyncTask<Object, Void, ArrayList<Torrent>> {
 class GetInfoTorrents extends AsyncTask<Object, Void, Torrent> {
     private RecyclerView rvTorrents;
     private Context mContext;
-
+    private Context activityContext;
     @Override
     protected Torrent doInBackground(Object[] params) {
         Torrent torrent = (Torrent) params[0];
         mContext = (Context) params[1];
+        if (params.length == 3) {
+            activityContext = (Context) params[2];
+        } else {
+            activityContext = GetTorrentsJob.getActivityContext();
+        }
         try {
             Document doc = Jsoup.connect(torrent.getUrl()).get();
             if (torrent.getDescription() == null) {
@@ -179,7 +184,7 @@ class GetInfoTorrents extends AsyncTask<Object, Void, Torrent> {
 
     @Override
     protected void onPostExecute(final Torrent torrent) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(GetTorrentsJob.getActivityContext(), R.style.MyAlertDialogStyle);
+        AlertDialog.Builder builder = new AlertDialog.Builder(activityContext, R.style.MyAlertDialogStyle);
 
         builder.setTitle(torrent.getName());
         builder.setMessage(torrent.getDescription());

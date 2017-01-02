@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Fast Torrent</string>
+    <string name="action_settings" translatable="false">Opciones</string>
+    <string name="cover" translatable="false">Carátula</string>
+    <string name="search_hint" translatable="false">Inserte nombre de la película</string>
+    <string name="search_title" translatable="false">Buscar Torrents</string>
+</resources>

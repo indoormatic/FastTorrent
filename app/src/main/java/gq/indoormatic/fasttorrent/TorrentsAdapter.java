@@ -67,9 +67,6 @@ public class TorrentsAdapter extends RecyclerView.Adapter<TorrentsAdapter.ViewHo
                 Torrent torrent = (Torrent) v.getTag(R.id.movie_url);
                 Log.d("Clicked url", torrent.getUrl());
                 new GetInfoTorrents().execute(torrent, mContext);
-/*
-                */
-
             }
         });
 
