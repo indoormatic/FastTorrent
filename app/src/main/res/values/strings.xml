@@ -3,6 +3,9 @@
     <string name="app_name">Fast Torrent</string>
     <string name="cover">Cover</string>
     <string name="action_settings">Settings</string>
-    <string name="search_title">Search Torrents</string>
     <string name="search_hint">Insert movie name</string>
+    <string name="watch_movie">Watch the movie!</string>
+    <string name="search_title">Search Torrents</string>
+    <string name="nah">Nah</string>
+    <string name="no_data">No data found</string>
 </resources>

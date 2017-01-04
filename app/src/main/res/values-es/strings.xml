@@ -5,4 +5,7 @@
     <string name="cover" translatable="false">Carátula</string>
     <string name="search_hint" translatable="false">Inserte nombre de la película</string>
     <string name="search_title" translatable="false">Buscar Torrents</string>
+    <string name="nah">Mejor no</string>
+    <string name="watch_movie">¡Ver la peli!</string>
+    <string name="no_data">No se ha encontrado ninguna película con ese nombre. Inténtelo de nuevo cambiando la búsqueda.</string>
 </resources>

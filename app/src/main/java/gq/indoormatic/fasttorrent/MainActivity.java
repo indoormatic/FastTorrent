@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -71,6 +72,10 @@ public class MainActivity extends AppCompatActivity {
 
             // Lookup the recyclerview in activity layout
             RecyclerView rvTorrents = (RecyclerView) findViewById(R.id.rvTorrents);
+
+            RecyclerView.ItemDecoration itemDecoration = new
+                    DividerItemDecoration(this, DividerItemDecoration.VERTICAL);
+            rvTorrents.addItemDecoration(itemDecoration);
 
             // Initialize torrents
             if (!RESULTS.equals(intent.getAction())) {

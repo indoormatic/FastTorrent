@@ -2,6 +2,7 @@ package gq.indoormatic.fasttorrent;
 
 import android.Manifest;
 import android.app.Activity;
+import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -11,8 +12,8 @@ import android.os.AsyncTask;
 import android.os.Environment;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.util.Log;
 import android.webkit.MimeTypeMap;
 
@@ -139,7 +140,7 @@ class GetTorrentsJob extends AsyncTask<Object, Void, ArrayList<Torrent>> {
         // Attach the adapter to the recyclerview to populate items
         rvTorrents.setAdapter(adapter);
         // Set layout manager to position the items
-        StaggeredGridLayoutManager gridLayoutManager = new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
+        LinearLayoutManager gridLayoutManager = new LinearLayoutManager(MainActivity.getAppContext());
         rvTorrents.setLayoutManager(gridLayoutManager);
         rvTorrents.setItemAnimator(new SlideInUpAnimator());
 
@@ -189,7 +190,7 @@ class GetInfoTorrents extends AsyncTask<Object, Void, Torrent> {
         builder.setTitle(torrent.getName());
         builder.setMessage(torrent.getDescription());
 
-        builder.setPositiveButton("YES", new DialogInterface.OnClickListener() {
+        builder.setPositiveButton(R.string.watch_movie, new DialogInterface.OnClickListener() {
 
             public void onClick(DialogInterface dialog, int which) {
                 new DownloadFileFromURL().execute(torrent.getUrl(), mContext);
@@ -197,7 +198,7 @@ class GetInfoTorrents extends AsyncTask<Object, Void, Torrent> {
             }
         });
 
-        builder.setNegativeButton("NO", new DialogInterface.OnClickListener() {
+        builder.setNegativeButton(R.string.nah, new DialogInterface.OnClickListener() {
 
             @Override
             public void onClick(DialogInterface dialog, int which) {
@@ -334,7 +335,11 @@ class DownloadFileFromURL extends AsyncTask<Object, String, String> {
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_NO_HISTORY);
         intent.setDataAndType(data, type);
 
-        MainActivity.getAppContext().startActivity(intent);
+        try {
+            MainActivity.getAppContext().startActivity(intent);
+        } catch (ActivityNotFoundException e) {
+            Log.d("Torrent Download", "No app can open this.");
+        }
 
     }
 

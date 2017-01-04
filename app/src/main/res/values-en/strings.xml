@@ -5,4 +5,7 @@
     <string name="cover" translatable="false">Cover</string>
     <string name="search_hint" translatable="false">Insert movie name</string>
     <string name="search_title" translatable="false">Search Torrents</string>
+    <string name="nah">Nah mate</string>
+    <string name="watch_movie">Watch the movie!</string>
+    <string name="no_data">No movies were found. Please try again.</string>
 </resources>

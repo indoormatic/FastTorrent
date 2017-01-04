@@ -113,17 +113,19 @@ class SearchTorrentsJob extends AsyncTask<Object, Void, ArrayList<Torrent>> {
     }
 
     @Override
-    protected void onPostExecute(ArrayList<Torrent> list) {
+    protected void onPostExecute(final ArrayList<Torrent> list) {
         ListView listView = mActivity.getListView();
+
         List<String> torrents = new LinkedList<String>();
         if (list != null) {
             for (Torrent torrent : list) {
                 torrents.add(torrent.getName());
             }
         }
-        mActivity.setListAdapter(new ArrayAdapter<String>(mActivity, R.layout.item_torrent, R.id.torrent_name, torrents));
+        mActivity.setListAdapter(new ArrayAdapter<String>(mActivity, R.layout.item_search, R.id.torrent_name, torrents));
 
 
     }
 
 }
+
