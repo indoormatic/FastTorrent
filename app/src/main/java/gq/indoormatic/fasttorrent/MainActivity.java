@@ -20,9 +20,17 @@ import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 public class MainActivity extends AppCompatActivity {
     public final static String QUERY = "gq.indoormatic.fasttorrent.QUERY";
     public final static String RESULTS = "gq.indoormatic.fasttorrent.RESULTS";
+    public static LinearLayoutManager mLinearLayoutManager;
     private static Context context;
     private RecyclerView mRecyclerView;
-    private LinearLayoutManager mLinearLayoutManager;
+
+    public static LinearLayoutManager getmLinearLayoutManager() {
+        return mLinearLayoutManager;
+    }
+
+    public static void setmLinearLayoutManager(LinearLayoutManager mLinearLayoutManager) {
+        MainActivity.mLinearLayoutManager = mLinearLayoutManager;
+    }
 
     public static Context getAppContext() {
         return MainActivity.context;
@@ -59,7 +67,6 @@ public class MainActivity extends AppCompatActivity {
             MainActivity.this.startActivity(searchIntent);
             finish();
         } else {
-
             Log.d("INFO", "Creada página");
             DisplayImageOptions defaultOptions = new DisplayImageOptions.Builder()
                     .cacheInMemory(true)
@@ -76,14 +83,37 @@ public class MainActivity extends AppCompatActivity {
             RecyclerView.ItemDecoration itemDecoration = new
                     DividerItemDecoration(this, DividerItemDecoration.VERTICAL);
             rvTorrents.addItemDecoration(itemDecoration);
+            // Retain an instance so that you can call `resetState()` for fresh searches
 
             // Initialize torrents
             if (!RESULTS.equals(intent.getAction())) {
                 new GetTorrentsJob().execute("http://www.mejortorrent.com/secciones.php?sec=descargas&ap=peliculas_hd&p=", rvTorrents, MainActivity.this);
                 DownloadFileFromURL.verifyStoragePermissions(this);
             }
+
         }
 
+    }
+
+    public void setScroller(RecyclerView rvTorrents) {
+        Log.d("Scroller", "Setting up scroller");
+        EndlessRecyclerViewScrollListener scrollListener = new EndlessRecyclerViewScrollListener(mLinearLayoutManager) {
+            @Override
+            public void onLoadMore(int page, int totalItemsCount, RecyclerView view) {
+                Log.d("Scroller", "Loading more data?");
+                // Triggered only when new data needs to be appended to the list
+                // Add whatever code is needed to append new items to the bottom of the list
+                loadNextDataFromApi(page);
+            }
+        };
+        // Adds the scroll listener to RecyclerView
+        rvTorrents.addOnScrollListener(scrollListener);
+    }
+
+    private void loadNextDataFromApi(int page) {
+        Log.d("Scroll", "Cogiendo página:" + page);
+        RecyclerView rvTorrents = (RecyclerView) findViewById(R.id.rvTorrents);
+        new AddTorrentsJob().execute("http://www.mejortorrent.com/secciones.php?sec=descargas&ap=peliculas_hd&p=", rvTorrents, this, page);
     }
 
 

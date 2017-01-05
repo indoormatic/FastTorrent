@@ -94,8 +94,17 @@ public class Torrent {
 }
 
 class GetTorrentsJob extends AsyncTask<Object, Void, ArrayList<Torrent>> {
-    public static Activity mActivity;
+    public static MainActivity mActivity;
+    public static ArrayList<Torrent> torrents;
     private RecyclerView rvTorrents;
+
+    public static ArrayList<Torrent> getTorrents() {
+        return torrents;
+    }
+
+    public static void setTorrents(ArrayList<Torrent> torrents) {
+        GetTorrentsJob.torrents = torrents;
+    }
 
     public static Activity getActivityContext() {
         return mActivity;
@@ -103,7 +112,7 @@ class GetTorrentsJob extends AsyncTask<Object, Void, ArrayList<Torrent>> {
 
     @Override
     protected ArrayList<Torrent> doInBackground(Object[] params) {
-        mActivity = (Activity) params[2];
+        mActivity = (MainActivity) params[2];
         ArrayList<Torrent> list = new ArrayList<Torrent>();
         try {
             for (int j = 1; j < 5; j++) {
@@ -135,16 +144,72 @@ class GetTorrentsJob extends AsyncTask<Object, Void, ArrayList<Torrent>> {
 
     @Override
     protected void onPostExecute(ArrayList<Torrent> list) {
+        setTorrents(list);
         // Create adapter passing in the sample user data
         TorrentsAdapter adapter = new TorrentsAdapter(MainActivity.getAppContext(), list);
         // Attach the adapter to the recyclerview to populate items
         rvTorrents.setAdapter(adapter);
         // Set layout manager to position the items
         LinearLayoutManager gridLayoutManager = new LinearLayoutManager(MainActivity.getAppContext());
+        MainActivity.setmLinearLayoutManager(gridLayoutManager);
         rvTorrents.setLayoutManager(gridLayoutManager);
         rvTorrents.setItemAnimator(new SlideInUpAnimator());
+        mActivity.setScroller(rvTorrents);
 
 
+
+    }
+
+}
+
+class AddTorrentsJob extends AsyncTask<Object, Void, ArrayList<Torrent>> {
+    public static MainActivity mActivity;
+    private RecyclerView rvTorrents;
+
+
+    @Override
+    protected ArrayList<Torrent> doInBackground(Object[] params) {
+        mActivity = (MainActivity) params[2];
+        ArrayList<Torrent> list = new ArrayList<Torrent>();
+        try {
+
+            rvTorrents = (RecyclerView) params[1];
+            Document doc = Jsoup.connect(params[0].toString() + params[3] + 4).get();
+            Elements movies = doc.select("div[align='justify']");
+            for (Element movie : movies) {
+                Elements links = movie.select("a");
+                Elements quality = movie.select("b");
+                for (int i = 0; i < 3; i++) {
+                    if (quality.get(i).text().equals("(MicroHD-1080p)")) {
+                        Document image = Jsoup.parseBodyFragment(links.get(i).html());
+                        Elements imageHtml = image.getElementsByTag("img");
+                        Torrent torrent = new Torrent(links.get(i + 3).text(),
+                                "(MicroHD-1080p)",
+                                "http://www.mejortorrent.com" + links.get(i).attr("href"));
+                        torrent.setCoverUrl("http://www.mejortorrent.com" + imageHtml.attr("src"));
+                        list.add(torrent);
+                    }
+                }
+            }
+
+        } catch (IOException e) {
+            Log.d("JSOUP", "Couldn't GET the URL");
+            return null;
+        }
+        return list;
+    }
+
+    @Override
+    protected void onPostExecute(ArrayList<Torrent> list) {
+        ArrayList<Torrent> currentTorrents = GetTorrentsJob.getTorrents();
+        // Create adapter passing in the sample user data
+        int size = currentTorrents.size();
+        for (Torrent torrent : list) {
+            currentTorrents.add(torrent);
+            GetTorrentsJob.setTorrents(currentTorrents);
+            rvTorrents.getAdapter().notifyItemChanged(size);
+            size++;
+        }
     }
 
 }
